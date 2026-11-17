@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이정민 포트폴리오 · 레드캡투어 CS 및 ESG 데이터 관리</title>
+<style>
+@font-face { font-family: "Galmuri11"; src: url("fonts/Galmuri11.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Galmuri11"; src: url("fonts/Galmuri11-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Galmuri14"; src: url("fonts/Galmuri14.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+:root {
+  --sky: #e6f1fa; --ink: #13293d; --deep: #2b4f78; --mid: #6f9bc8; --soft: #c9def2;
+  --water: #a9cde9; --body: #f7fbff; --accent: #b04a62; --plane: #b04a62;
+  --pixel: "Galmuri11", "DungGeunMo", ui-monospace, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  --pixel-lg: "Galmuri14", "Galmuri11", ui-monospace, "Apple SD Gothic Neo", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sky: #0b1626; --ink: #dde9f6; --deep: #0f2a47; --mid: #5b88b8; --soft: #1a3354;
+    --water: #1d4a78; --body: #101f33; --accent: #d9758b; --plane: #d9758b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --sky: #0b1626; --ink: #dde9f6; --deep: #0f2a47; --mid: #5b88b8; --soft: #1a3354;
+  --water: #1d4a78; --body: #101f33; --accent: #d9758b; --plane: #d9758b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--sky); color: var(--ink);
+  font-family: var(--pixel); font-size: 15px; line-height: 1.7;
+  word-break: keep-all; overflow-wrap: anywhere;
+  -webkit-font-smoothing: none; font-smooth: never;
+}
+a { color: inherit; text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+.grain {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .16; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .3  0 0 0 0 .45  0 0 0 .9 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+}
+.tools { position: fixed; top: 14px; right: 14px; z-index: 5; display: flex; gap: 10px; }
+.tools button {
+  width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--mid);
+  background: var(--body); color: var(--ink); font-family: var(--pixel); font-size: 13px; font-weight: 700;
+  cursor: pointer; box-shadow: 3px 3px 0 var(--deep);
+}
+.tools button:hover { color: var(--accent); }
+.tools button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--deep); }
+.page { position: relative; z-index: 2; }
+.hero { min-height: 82vh; min-height: 82svh; padding: 22px 18px; display: flex; flex-direction: column; justify-content: space-between; }
+.hero h1 { font-family: var(--pixel-lg); font-weight: 400; font-size: 42px; line-height: 1.15; margin: 0; letter-spacing: 1px; }
+.hero p { margin: 6px 0 0; color: var(--deep); font-size: 14px; }
+:root[data-theme="dark"] .hero p { color: var(--mid); }
+.hero .role { font-size: 17px; font-weight: 700; color: var(--ink); margin-top: 8px; }
+.hero .for { display: inline-block; font-size: 13px; padding: 1px 8px; background: var(--body); border: 1px solid var(--accent); color: var(--ink); }
+.keys { margin-top: 10px; max-width: 340px; }
+.keys li { box-shadow: 2px 2px 0 var(--deep); }
+.play { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); margin: 0; font-size: 12px; color: var(--deep); background: var(--body); border: 1px solid var(--mid); padding: 2px 10px; white-space: nowrap; }
+@media (max-width: 700px) { .play { white-space: normal; width: 86%; text-align: center; } }
+.hint { align-self: center; font-size: 14px; color: var(--deep); text-decoration: none; background: var(--body); border: 2px solid var(--mid); padding: 2px 12px; box-shadow: 3px 3px 0 var(--deep); }
+main { max-width: 760px; margin: 0 auto; padding: 0 16px 80px; display: flex; flex-direction: column; gap: 44px; }
+.win {
+  border: 2px solid var(--mid); box-shadow: 8px 8px 0 var(--deep);
+  background: color-mix(in srgb, var(--body) 86%, transparent);
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+  margin-right: 14px;
+}
+.win:nth-child(even) { margin-right: 0; margin-left: 14px; }
+.win > h2 {
+  font-family: var(--pixel-lg); font-weight: 400; font-size: 28px; line-height: 1.2;
+  margin: 0; padding: 8px 14px 9px; background: var(--soft); border-bottom: 2px solid var(--mid);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.win > h2::after { content: "● ●"; font-size: 10px; letter-spacing: 3px; color: var(--mid); }
+.in { padding: 16px 14px 18px; display: flex; flex-direction: column; gap: 14px; }
+.in p { margin: 0; }
+.dim { color: var(--mid); font-size: 13px; }
+:root:not([data-theme="dark"]) .dim { color: var(--deep); }
+.shots { display: flex; gap: 10px; flex-wrap: wrap; }
+.shot { padding: 0; border: 2px solid var(--deep); background: var(--body); cursor: zoom-in; box-shadow: 3px 3px 0 var(--deep); line-height: 0; position: relative; }
+.shot img { height: 92px; width: auto; display: block; }
+.shot:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--deep); }
+.shot::after { content: "+"; position: absolute; right: 2px; bottom: 2px; font: 700 12px/1 var(--pixel, monospace); background: var(--deep); color: var(--body); padding: 2px 4px; }
+.lb { position: fixed; inset: 0; z-index: 50; background: rgba(10,22,40,.78); display: flex; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out; }
+.lb[hidden] { display: none; }
+.lb figure { margin: 0; background: var(--body); border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--deep); padding: 10px; max-width: min(92vw, 900px); }
+.lb img { display: block; max-width: 100%; max-height: 76vh; margin: 0 auto; image-rendering: auto; }
+.lb figcaption { font-size: 14px; margin-top: 8px; text-align: center; }
+.lbx { position: fixed; top: 14px; right: 18px; font-size: 28px; line-height: 1; background: var(--body); border: 2px solid var(--ink); width: 40px; height: 40px; cursor: pointer; }
+.fits { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 10px; }
+.fits li::marker { color: var(--accent); }
+.fits b { display: block; font-size: 15px; }
+.fits span { display: block; font-size: 14px; line-height: 1.6; }
+.item { padding: 14px 0; border-top: 1px solid var(--soft); display: flex; flex-direction: column; gap: 8px; }
+.item:first-child { border-top: 0; padding-top: 0; }
+.item:last-child { padding-bottom: 0; }
+.item h3 { font-family: var(--pixel); font-weight: 700; font-size: 17px; line-height: 1.4; margin: 0; }
+.item .lead { font-weight: 700; }
+.steps { margin: 0; display: grid; grid-template-columns: 76px 1fr; gap: 6px 12px; }
+.steps dt { color: var(--accent); font-weight: 700; font-size: 13px; padding-top: 2px; }
+.steps dd { margin: 0; }
+.cells { display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; max-width: 320px; }
+.cells span { aspect-ratio: 1; border: 1px solid var(--mid); }
+.cells .was { background: var(--deep); border-color: var(--deep); }
+:root[data-theme="dark"] .cells .was { background: var(--mid); border-color: var(--mid); }
+.cells .now { background: var(--accent); border-color: var(--accent); animation: blink 1.6s steps(2) 3; }
+@keyframes blink { 50% { opacity: .35; } }
+.row { display: grid; grid-template-columns: 124px 1fr; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--soft); }
+.row:first-child { border-top: 0; padding-top: 0; }
+.row:last-child { padding-bottom: 0; }
+.row .when { color: var(--mid); font-size: 13px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+:root:not([data-theme="dark"]) .row .when { color: var(--deep); }
+.row b { font-weight: 700; }
+.row small { display: block; font-size: 13px; }
+.row p { margin: 4px 0 0 0; font-size: 14px; line-height: 1.65; }
+.funnel li:nth-child(even) { box-shadow: none; border: 0; background: none; padding: 0 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.chips li { font-size: 13px; padding: 1px 8px; border: 1px solid var(--mid); background: var(--body); }
+footer { text-align: center; font-size: 12px; color: var(--mid); padding-bottom: 28px; position: relative; z-index: 2; }
+@media (min-width: 720px) {
+  .hero { padding: 36px 40px; }
+  .hero h1 { font-size: 56px; }
+  .win { margin-right: 80px; }
+  .win:nth-child(even) { margin-left: 80px; }
+}
+@media (max-width: 420px) {
+  .row { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; gap: 0; }
+  .steps dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .cells .now { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="tools">
+  <button id="lang" type="button" aria-label="언어 바꾸기 / Switch language">EN</button>
+  <button id="theme" type="button" aria-label="밝기 바꾸기 / Switch theme">◐</button>
+</div>
+
+<div class="page">
+  <header class="hero">
+    <div>
+      <h1 data-en="JeongMin Lee">이정민</h1>
+      <p class="role" data-en="CS data management · VOC analysis">CS 데이터 관리 · VOC 분석</p>
+      <p><span class="for" data-en="For Redcap Tour · CS &amp; ESG Data Management">레드캡투어 CS 및 ESG 데이터 관리 지원</span></p>
+      <ul class="chips keys" aria-label="핵심 역량">
+        <li data-en="CRM data validation">CRM 데이터 검증</li>
+        <li data-en="Excel pivot · dashboard · report">Excel 피벗 · 대시보드 · 보고서</li>
+        <li>SQL · SQLD · ADsP</li>
+        <li data-en="AI tools: ChatGPT, Claude Code, Codex">AI 활용: ChatGPT, Claude Code, Codex</li>
+      </ul>
+    </div>
+    <a class="hint" href="#about" data-en="scroll ▼">아래로 ▼</a>
+  </header>
+
+  <main>
+    <section class="win" id="about">
+      <h2 data-en="About">나에 대해</h2>
+      <div class="in">
+        <ul class="fits">
+          <li><b data-en="I record what customers ask for, accurately">고객의 요청을 정확한 기록으로 남깁니다</b>
+            <span data-en="At EF Korea I organized about 50 customer records a day in CRM, checked for duplicates and format errors, and applied contact-preference and deletion requests right away.">EF Korea에서 하루 약 50건의 고객 정보를 CRM에 정리하며 중복과 형식 오류를 점검했고, 수신 방식 변경이나 삭제 요청은 바로 반영했습니다.</span></li>
+          <li><b data-en="I turn data into dashboards and reports">데이터를 대시보드와 보고서로 정리합니다</b>
+            <span data-en="Built an Excel pivot and slicer dashboard on Seoul transit ridership and weather, and analysed customer purchase data in SQL.">Excel 피벗테이블과 슬라이서로 대중교통 이용량 대시보드와 보고서를 만들었고, SQL로 고객 구매 데이터를 분석했습니다.</span></li>
+          <li><b data-en="I compare results by the same criteria">같은 기준으로 비교해 효과를 확인합니다</b>
+            <span data-en="Fixed my pass criteria first, then re-checked the same 100 photos: passes went from 60 to 88.">판정 기준을 먼저 확정하고 같은 사진 100장을 다시 검증해, 통과 사진을 60장에서 88장으로 늘렸습니다.</span></li>
+          <li><b data-en="I put AI tools to work">AI 도구를 업무에 씁니다</b>
+            <span data-en="Applied the DeepLab segmentation model in my graduation project and reviewed edge handling with ChatGPT. I now use Claude Code and Codex, and automate job-posting collection and fit scoring with Claude Code and Git.">졸업작품에 DeepLab 인물 분할 모델을 적용하고 ChatGPT로 경계 처리 방법을 검토했습니다. 지금은 Claude Code와 Codex를 쓰며, Claude Code와 Git으로 채용공고 수집과 적합도 평가를 자동화하고 있습니다.</span></li>
+        </ul>
+        <p class="dim" data-en="Seokyeong University, Computer Engineering · graduated Feb 2026 · Seoul">서경대학교 컴퓨터공학과 · 2026.02 졸업 · 서울</p>
+      </div>
+    </section>
+
+    <section class="win" id="projects">
+      <h2 data-en="Projects">프로젝트</h2>
+      <div class="in">
+        <article class="item">
+          <h3 data-en="Seoul Public Transit Ridership and Weather, 2024">2024년 서울시 대중교통 이용량과 기상 요인 분석</h3>
+          <p class="dim" data-en="K-Move Global Business Data Analytics Program · team lead · Excel pivot tables, slicers">K-Move 글로벌 비즈니스 데이터분석 전문가 과정 · 팀 조장 · Excel 피벗테이블, 슬라이서</p>
+          <dl class="steps">
+            <dt data-en="Question">질문</dt>
+            <dd data-en="When does the city ride the most, and does the weather change it?">서울 사람들은 언제 가장 많이 타고, 날씨에 따라 달라질까?</dd>
+            <dt data-en="How">방법</dt>
+            <dd data-en="Compared ridership by weekday and weather with pivot tables and slicers, and built a dashboard and report.">피벗테이블과 슬라이서로 요일별, 날씨별 이용량을 비교하고 대시보드와 보고서로 정리했습니다.</dd>
+            <dt data-en="Found">결과</dt>
+            <dd data-en="Monday morning commutes were busiest, and subway rides rose on rainy and snowy days.">월요일 출근길이 가장 붐볐고, 비나 눈이 오는 날 지하철 이용이 늘었습니다.</dd>
+            <dt data-en="Caution">주의한 점</dt>
+            <dd data-en="Season and weekday effects were mixed in, so I did not credit the change to weather alone and stated that limit in the report.">계절과 요일 요인이 섞여 있어 날씨만의 효과로 단정하지 않고, 이 한계를 보고서에 밝혔습니다.</dd>
+            <dt data-en="So">제안</dt>
+            <dd data-en="Review extra subway service in the rainy season and midwinter.">장마철과 한겨울 지하철 증편 검토</dd>
+          </dl>
+        </article>
+
+        <article class="item">
+          <h3 data-en="Customer Purchase Analysis in SQL">고객 구매 데이터 SQL 분석</h3>
+          <p class="dim" data-en="Shinhan DS Financial SW Academy · SQL, Oracle DB, PowerPoint">신한DS 금융SW 아카데미 · SQL, Oracle DB, PowerPoint</p>
+          <p data-en="This is where I first found analysing real data fun. I joined four tables, CUSTOMER, ITEM, ORDER_INFO and RESERVATION, to compare average purchase by gender and spending by age group, and presented it in PowerPoint.">실제 데이터를 다루는 재미를 처음 느낀 작업입니다. CUSTOMER, ITEM, ORDER_INFO, RESERVATION 네 테이블을 연결해 성별 평균 구매액과 연령대별 소비 추이를 분석하고, PowerPoint로 정리해 발표했습니다.</p>
+        </article>
+
+        <article class="item">
+          <h3 data-en="AI Profile Photo Service: quality checked by fixed criteria">AI 프로필 사진 생성 서비스: 같은 기준으로 검증한 품질 개선</h3>
+          <p class="dim" data-en="Graduation project · solo · Python, Flask, OpenCV, DeepLabV3+, ChatGPT">졸업작품 · 1인 · Python, Flask, OpenCV, DeepLabV3+, ChatGPT</p>
+          <div class="shots"><button type="button" class="shot" data-full="img/ai_result.jpg" data-cap="DeepLab 인물 분할로 배경을 바꾼 결과" data-cap-en="Background replaced with DeepLab person segmentation"><img src="img/ai_result.jpg" alt="DeepLab 인물 분할로 배경을 바꾼 결과" loading="lazy"></button><button type="button" class="shot" data-full="img/ai_hsv.jpg" data-cap="HSV 명도(V) 채널만 조정한 밝기 보정" data-cap-en="Brightness adjusted on the HSV Value channel only"><img src="img/ai_hsv.jpg" alt="HSV 명도(V) 채널만 조정한 밝기 보정" loading="lazy"></button></div>
+          <dl class="steps">
+            <dt data-en="Problem">문제</dt>
+            <dd data-en="Hair edges were cut off or bits of background remained, and judging by eye could not say whether a fix helped.">머리카락 윤곽이 잘리거나 배경이 남았고, 눈으로만 봐서는 개선 여부를 일관되게 판단할 수 없었습니다.</dd>
+            <dt data-en="Criteria">기준</dt>
+            <dd data-en="Fixed two pass criteria first: hair-edge loss and leftover background.">머리카락 윤곽 손실과 배경 잔여 여부를 판정 기준으로 먼저 확정했습니다.</dd>
+            <dt data-en="Fix">개선</dt>
+            <dd data-en="Switched from colour-based removal to DeepLab person segmentation, reviewed edge handling with ChatGPT, then added edge detection, mask dilation and blending.">색상 기반 제거에서 DeepLab 인물 분할로 바꾸고, ChatGPT로 경계 처리 방법을 검토한 뒤 경계 검출, 마스크 확장, 블렌딩을 적용했습니다.</dd>
+          </dl>
+          <div class="cells" id="cells" role="img" aria-label="같은 100장 중 통과 60장에서 88장"></div>
+          <p class="dim" data-en="Same 100 photos, same criteria · ■ passed before 60 · ■ added after the fix 28 · □ still failing 12">같은 100장, 같은 기준 · ■ 기존 통과 60 · <span style="color:var(--accent)">■</span> 개선 후 추가 28 · □ 미통과 12</p>
+        </article>
+
+        <article class="item">
+          <h3 data-en="Job-posting collection and fit scoring with AI">AI로 채용공고 수집과 적합도 평가</h3>
+          <p class="dim" data-en="Personal · 2026.11 – now · Claude Code, Git">개인 · 2026.11 – 진행 중 · Claude Code, Git</p>
+          <ul class="chips funnel" aria-label="228건에서 10건으로">
+            <li data-en="228 collected">228건 수집</li><li>→</li><li data-en="175 after dedupe">중복 제거 175건</li><li>→</li><li data-en="top 10 by fit">적합도 상위 10건</li>
+          </ul>
+          <p data-en="I connected an open-source tool with Claude Code and Git, set it to my profile, and use it to automate repetitive collection and sorting in my own job search.">공개된 도구를 Claude Code와 Git으로 연결해 제 프로필에 맞게 설정하고, 반복되는 수집과 분류를 자동화해 구직에 직접 쓰고 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="win" id="work">
+      <h2 data-en="Experience">경력 · 활동</h2>
+      <div class="in" style="gap:0">
+        <div class="row"><span class="when">2024.10 – 2024.12</span><div><b data-en="EF Korea · CRM Assistant (part-time)">EF Korea · CRM Assistant (아르바이트)</b>
+          <p data-en="Moved phone-call notes and Excel records into the internal CRM, about 50 customers a day. Searched existing records before each new entry, fixed duplicates and format errors, and applied customers' contact-preference and deletion requests right away.">전화 상담 내용과 Excel 자료를 사내 CRM에 옮겨 하루 약 50건의 고객 정보를 정리했습니다. 신규 등록 전 기존 기록을 검색해 중복과 형식 오류를 바로잡았고, 고객의 수신 방식 변경이나 삭제 요청은 바로 반영했습니다.</p></div></div>
+        <div class="row"><span class="when">2024.03 – now</span><div><b data-en="Festival Life · Editor">페스티벌 라이프 · 에디터</b>
+          <p data-en="Plan and write articles for a music magazine with about 60,000 Instagram followers. At Busan International Rock Festival 2024, ran the magazine's booth as a team of six for 500+ visitors a day, and proposed cutting two games to one when staffing got tight.">인스타그램 팔로워 약 6만의 음악 매거진에서 기사를 기획하고 씁니다. 2024 부산국제록페스티벌에서 6인 팀으로 하루 500명 이상이 찾는 부스를 운영했고, 인력이 빠듯해지자 게임을 하나로 줄이자고 제안해 운영을 단순화했습니다.</p></div></div>
+        <div class="row"><span class="when">2023.10 – 2024.02</span><div><b data-en="Ivy Academy · English teacher (part-time)">아이비 아카데미 · 영어 강사 (아르바이트)</b>
+          <p data-en="Kept progress and grade sheets in Excel, flagged students who needed extra lessons or a parent meeting, and made every vocabulary test myself.">학생별 진도표와 성적표를 Excel로 관리하며 보충 수업이나 상담이 필요한 학생을 원장님께 전달했고, 단어 시험지를 직접 만들었습니다.</p></div></div>
+        <div class="row"><span class="when">2019.09 – 2021.02</span><div><b data-en="Seokyeong University press · Reporter">서경대학교 학보사 · 기자</b>
+          <p data-en="Found and contacted interviewees myself, from students on campus to community centers and residents in Seongbuk-gu.">교내 학생부터 성북구의 센터와 주민까지 인터뷰 대상을 직접 찾아 섭외하고 취재했습니다.</p></div></div>
+      </div>
+    </section>
+
+    <section class="win" id="skills">
+      <h2 data-en="Skills">기술 · 자격</h2>
+      <div class="in">
+        <ul class="chips">
+          <li>Excel</li><li>SQL</li><li>Oracle DB</li><li>PowerPoint</li><li>Python</li><li data-en="Tableau (coursework)">Tableau (학습)</li><li>Git</li><li>ChatGPT</li><li>Claude Code</li><li>Codex</li><li>Canva</li><li>Figma</li>
+        </ul>
+        <div>
+          <div class="row"><span class="when">2026.03</span><div><b>SQLD</b></div></div>
+          <div class="row"><span class="when">2025.11</span><div><b>ADsP</b></div></div>
+          <div class="row"><span class="when">2025.07</span><div><b data-en="Linux Master Level 2">리눅스마스터 2급</b></div></div>
+          <div class="row"><span class="when" data-en="English">영어</span><div><b>OPIc IH</b></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="win" id="edu">
+      <h2 data-en="Education">교육</h2>
+      <div class="in" style="gap:0">
+        <div class="row"><span class="when">2026.02</span><div><b data-en="Seokyeong University, B.S. Computer Engineering">서경대학교 컴퓨터공학과 졸업</b><small data-en="GPA 3.66 / 4.5">학점 3.66 / 4.5</small></div></div>
+        <div class="row"><span class="when">2025.06 – 2025.12</span><div><b data-en="K-Move Global Business Data Analytics Program">K-Move 글로벌 비즈니스 데이터분석 전문가 과정</b><small data-en="Excel, Python, Tableau">Excel, Python, Tableau 학습</small></div></div>
+        <div class="row"><span class="when">2025.04 – 2025.06</span><div><b data-en="Shinhan DS Financial SW Academy">신한DS 금융SW 아카데미</b><small data-en="SQL customer data analysis">SQL 고객 데이터 분석</small></div></div>
+      </div>
+    </section>
+
+    <section class="win" id="contact">
+      <h2 data-en="Contact">연락처</h2>
+      <div class="in">
+        <p>EMAIL <a href="mailto:kyr22jml@gmail.com">kyr22jml@gmail.com</a></p>
+        <p>HP <a href="tel:01059195131">010-5919-5131</a></p>
+      </div>
+    </section>
+  </main>
+  <div class="lb" id="lb" hidden><figure><img id="lbimg" alt=""><figcaption id="lbcap"></figcaption></figure><button type="button" class="lbx" id="lbx" aria-label="닫기">×</button></div>
+  <footer>/jeongmin · 2026</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  var box = document.getElementById("cells");
+  for (var i = 0; i < 100; i++) {
+    var c = document.createElement("span");
+    c.className = i < 60 ? "was" : i < 88 ? "now" : "";
+    box.appendChild(c);
+  }
+
+  var lb = document.getElementById("lb"), lbimg = document.getElementById("lbimg"), lbcap = document.getElementById("lbcap");
+  document.querySelectorAll(".shot").forEach(function (b) {
+    b.addEventListener("click", function () {
+      lbimg.src = b.dataset.full; lbimg.alt = b.dataset.cap;
+      lbcap.textContent = root.lang === "en" ? b.dataset.capEn : b.dataset.cap;
+      lb.hidden = false; document.getElementById("lbx").focus();
+    });
+  });
+  function closeLb() { lb.hidden = true; }
+  lb.addEventListener("click", closeLb);
+  addEventListener("keydown", function (e) { if (e.key === "Escape") closeLb(); });
+
+  var en = false, nodes = document.querySelectorAll("[data-en]");
+  nodes.forEach(function (n) { n.dataset.ko = n.innerHTML; });
+  document.getElementById("lang").addEventListener("click", function () {
+    en = !en;
+    nodes.forEach(function (n) { if (en) n.textContent = n.dataset.en; else n.innerHTML = n.dataset.ko; });
+    root.lang = en ? "en" : "ko";
+    this.textContent = en ? "한" : "EN";
+  });
+
+  function isDark() {
+    var t = root.getAttribute("data-theme");
+    return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  document.getElementById("theme").addEventListener("click", function () {
+    root.setAttribute("data-theme", isDark() ? "light" : "dark");
+    readColors();
+  });
+
+  /* 배경 장면: 사선으로 날아가는 자두색 도트 비행기 */
+  var cv = document.getElementById("scene"), ctx = cv.getContext("2d");
+  var W = 0, H = 0, C = {};
+  function readColors() {
+    var s = getComputedStyle(root);
+    ["sky", "ink", "deep", "mid", "soft", "body", "plane"].forEach(function (k) {
+      C[k] = s.getPropertyValue("--" + k).trim();
+    });
+  }
+  function resize() {
+    var S = innerWidth < 700 ? 3 : 4;
+    W = Math.ceil(innerWidth / S); H = Math.ceil(innerHeight / S);
+    cv.width = W; cv.height = H;
+  }
+  function rnd(n) { var x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); }
+  function R(x, y, w, h, col) { ctx.fillStyle = col; ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+
+  /* 오른쪽 위를 향한 비행기 (13x13 격자, 1=동체 2=창문) */
+  var plane = [];
+  for (var i = 1; i <= 11; i++) { plane.push([i, 12 - i, 1]); plane.push([i + 1, 12 - i, 1]); }
+  for (i = 1; i <= 4; i++) { plane.push([6 - i, 6 - i + 1, 1]); plane.push([7 + i - 1, 7 + i, 1]); plane.push([6 - i + 1, 6 - i + 1, 1]); plane.push([7 + i - 1, 7 + i - 1, 1]); }
+  [[2, 8], [1, 7], [4, 11], [5, 12]].forEach(function (q) { plane.push([q[0], q[1], 1]); });
+  [[8, 4], [9, 3], [10, 2]].forEach(function (q) { plane.push([q[0], q[1], 2]); });
+
+  function cloud(x, y, s) {
+    R(x, y + s, s * 6, s * 2, C.body);
+    R(x + s, y, s * 3, s, C.body);
+    R(x + s * 4, y + s * .5, s * 1.5, s * .5, C.body);
+  }
+
+  function draw(t) {
+    R(0, 0, W, H, C.sky);
+    for (var i = 0; i < 40; i++) {
+      var dx = (rnd(i) * W + t * (1 + rnd(i + 9) * 3)) % W;
+      var dy = rnd(i + 3) * H + Math.sin(t * .5 + i) * 2;
+      ctx.globalAlpha = .25 + rnd(i + 5) * .5;
+      R(dx, dy, 1, 1, C.mid);
+    }
+    ctx.globalAlpha = .85;
+    for (i = 0; i < 5; i++) {
+      var s = 2 + Math.round(rnd(i + 30) * 2);
+      var cx = W + 20 - ((t * (2 + rnd(i + 31) * 3) + rnd(i + 32) * (W + 60)) % (W + 60));
+      cloud(cx, H * (.1 + rnd(i + 33) * .7), s);
+    }
+    ctx.globalAlpha = 1;
+
+    /* 비행 경로: 왼쪽 아래에서 오른쪽 위로 */
+    var u = (t * .045) % 1.25, P = 2;
+    var px = -30 + u * (W + 60), py = H * .9 - u * (H * .8);
+    for (var k = 1; k < 14; k++) {
+      ctx.globalAlpha = 1 - k / 14;
+      R(px - k * 5 + 4, py + k * 5 * (H * .8) / (W + 60) + 22, 2, 2, C.mid);
+    }
+    ctx.globalAlpha = 1;
+    var bob = Math.round(Math.sin(t * 3) * 1);
+    plane.forEach(function (c) { R(px + c[0] * P + 2, py + c[1] * P + bob + 2, P, P, C.deep); });
+    plane.forEach(function (c) { R(px + c[0] * P, py + c[1] * P + bob, P, P, c[2] === 2 ? C.body : C.plane); });
+  }
+
+  var still = false;
+  function loop(ms) { draw(ms / 1000); if (!still) requestAnimationFrame(loop); }
+  readColors(); resize();
+  addEventListener("resize", function () { resize(); if (still) draw(1); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { readColors(); if (still) draw(1); });
+  new MutationObserver(function () { readColors(); if (still) draw(1); }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
